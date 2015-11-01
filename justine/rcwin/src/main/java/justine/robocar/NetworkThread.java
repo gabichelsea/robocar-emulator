@@ -15,6 +15,10 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
+
+
 
 import justine.robocar.TrafficStateProtos.CarData;
 import justine.robocar.TrafficStateProtos.TrafficStateHeader;
@@ -34,6 +38,10 @@ public class NetworkThread extends Thread implements PlayBack {
 	private volatile int speed = 200;
 	private volatile long neededPosition = -1;
 	private volatile boolean playing = true;
+
+	public static List caughtListForPolice = new ArrayList<Integer>();
+	public static List timeListForPolice = new ArrayList<ChaseTime>();
+
 
 	public interface OnNewTrafficListener {
 		public void onNewTraffic(Traffic traffic);
@@ -261,6 +269,21 @@ public class NetworkThread extends Thread implements PlayBack {
 					sb.append(sec);
 					sb.append("|");
 
+
+					int policeID = 0;
+					for (WaypointPolice way: cop_list) {
+						way.setPoliceID(policeID);
+
+						if (policeID == timeListForPolice.size()) {
+							timeListForPolice.add(new ChaseTime());
+							caughtListForPolice.add(new Integer(0));	
+						}
+
+						++policeID;
+					}
+
+
+
 					traffic = new Traffic();
 					traffic.copList = cop_list;
 					traffic.gangsterList = gangster_list;
@@ -272,6 +295,7 @@ public class NetworkThread extends Thread implements PlayBack {
 					traffic.longestTeamName = longestTeamName;
 					traffic.timestamp = System.currentTimeMillis();
 					traffic.seconds = sec;
+
 
 					if (onNewTrafficListener != null)
 						onNewTrafficListener.onNewTraffic(Traffic.create(traffic));

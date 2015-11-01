@@ -18,8 +18,17 @@ public class ScoreBoard {
     private int max_name_width;
     private int font_height;
     private boolean recalc = true;
+    private boolean firstChange = true;
+    private int gangsterLimit = 0;
 
     public void update(Traffic t) {
+
+    	if (firstChange && traffic != null && traffic.gangsterList.size() != 0) {
+    		firstChange = false;
+    		gangsterLimit = traffic.gangsterList.size();
+    	}
+
+
 	if (traffic == null) {
 	    traffic = t;
 	    return;
@@ -38,7 +47,7 @@ public class ScoreBoard {
 	    max_name_width = font_metrics.stringWidth(traffic.longestTeamName);
 	    font_height = font_metrics.getHeight();
 	    height = (font_height + 10) * (traffic.cop_teams.size() + 1) + 5;
-	    width = max_name_width + font_height + font_metrics.charWidth('-') * 12 + 15;
+	    width = max_name_width + font_height + font_metrics.charWidth('-') * 12 + 25;
 	    recalc = false;
 	}
 	g.fillRoundRect(10, 10, width, height, 10, 10);
@@ -63,7 +72,7 @@ public class ScoreBoard {
 	sb.append("Gangsters: ");
 	sb.append(traffic.caughtList.size());
 	sb.append("/");
-	sb.append(traffic.gangsterList.size());
+	sb.append(gangsterLimit);
 
 	draw_y += font_height;
 	g.drawString(sb.toString(), 15, draw_y);

@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
+
 import javax.swing.ImageIcon;
 
 import org.jxmapviewer.JXMapViewer;
@@ -18,6 +19,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 class WaypointPolice extends UpdateableWaypoint {
 
 	private static Image sprite;
+	private static NetworkThread network;
 	String name;
 	Color c;
 	int num_caught_, id_;
@@ -28,6 +30,8 @@ class WaypointPolice extends UpdateableWaypoint {
 	LinkedList<Loc> path;
 	Color pathcolor = new Color(0, 66, 255, 170);
 	protected static boolean on = false;
+	private int policeID;
+
 
 	public WaypointPolice(GeoPosition from, GeoPosition to, String name,
 			int num_caught, long node_from, long node_to, int id, Color c,
@@ -41,6 +45,8 @@ class WaypointPolice extends UpdateableWaypoint {
 		node_from_ = node_from;
 		node_to_ = node_to;
 		id_ = id;
+
+		
 	}
 
 	@Override
@@ -120,7 +126,6 @@ class WaypointPolice extends UpdateableWaypoint {
 				(int) point.getX() - getSprite().getWidth(map),
 				(int) point.getY() - getSprite().getHeight(map), null);
 
-		// map.setCenterPosition(getPosition());
 	}
 
 	@Override
@@ -140,24 +145,50 @@ class WaypointPolice extends UpdateableWaypoint {
 		}
 		onScreen = true;
 
+
+
+		ChaseTime ctime = checkAndGetChaseTime();
+
+
 		g.setFont(serif);
 		font_metrics = g.getFontMetrics();
-		int nameWidth = font_metrics.stringWidth(getName());
+		int nameWidth = font_metrics.stringWidth(getName() + ctime);
 
 		g.setColor(borderbg);
 		g.drawImage(getSprite(),
 				(int) point.getX() - getSprite().getWidth(map),
 				(int) point.getY() - getSprite().getHeight(map), null);
 		Rectangle rect = new Rectangle((int) point.getX(), (int) point.getY(),
-				nameWidth + 4, 20);
+				nameWidth + 2, 20);
 
 		g.fill(rect);
 		g.setColor(c);
 		g.draw(rect);
 		g.setColor(Color.WHITE);
+		
+		
+		
+		
 
-		g.drawString(getName(), (int) point.getX() + 2,
+		g.drawString(getName() + ctime, (int) point.getX() + 2,
 				(int) point.getY() + 20 - 5);
+
+	}
+
+
+
+
+	public ChaseTime checkAndGetChaseTime() {
+		
+		ChaseTime ctime = (ChaseTime) network.timeListForPolice.get(policeID);
+		if ((Integer) network.caughtListForPolice.get(policeID) != num_caught_) {
+			ctime.restore();
+			network.caughtListForPolice.set(policeID, num_caught_);
+		} else {
+			ctime.chaseGangster();
+		}
+
+		return ctime;
 
 	}
 
@@ -168,6 +199,10 @@ class WaypointPolice extends UpdateableWaypoint {
 					.getImage();
 		}
 		return sprite;
+	}
+
+	public void setPoliceID(int policeID) {
+		this.policeID = policeID;
 	}
 
 	String getName() {
