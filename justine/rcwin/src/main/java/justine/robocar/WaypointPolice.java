@@ -45,8 +45,6 @@ class WaypointPolice extends UpdateableWaypoint {
 		node_from_ = node_from;
 		node_to_ = node_to;
 		id_ = id;
-
-		
 	}
 
 	@Override
