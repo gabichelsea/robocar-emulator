@@ -5,42 +5,46 @@ import java.util.Date;
 
 public class ChaseTime {
 
-	private Calendar calendar;
-	private Date old;
-	private String time;
+	private String currentTime;
+	private long oldSeconds;
+	private long allSeconds;
 
 	ChaseTime() {
 		restore();
 	}
 
 	public void restore() {
-		calendar = Calendar.getInstance();
-		old = calendar.getTime();
+		oldSeconds = System.currentTimeMillis();
 	}
 
 	public void chaseGangster() {
 
-		calendar = Calendar.getInstance();
-		Date now = calendar.getTime();
-		long diff = now.getTime() - old.getTime();
+		long diff = System.currentTimeMillis() - oldSeconds;
 
-		long diffSeconds = diff / 1000 % 60;
-		long diffMinutes = diff / (60 * 1000) % 60;
-		
+		allSeconds = diff / 1000;
+		formatTime();
+	}
 
-		if (diffMinutes < 1) {
-			time = "(" + diffSeconds + "s)"; 
+	public long getAllSeconds() {
+		return allSeconds;
+	}
+
+	public void formatTime() {
+		int minutes = (int) (allSeconds / 60);
+		if (minutes < 1) {
+			currentTime = "(" + allSeconds + "s)";
 		} else {
-			time = "(" + diffMinutes + "m:" + diffSeconds + "s)";
+			int normalSeconds = (int) (allSeconds % 60);
+			currentTime = "(" + minutes + "m:" + normalSeconds + "s)";
 		}
 	}
 
-	public String getTime() {
-		return time;
+	public String getCurrentTime() {
+		return currentTime;
 	}
 
 	@Override
 	public String toString() {
-		return getTime();
+		return getCurrentTime();
 	}
 }

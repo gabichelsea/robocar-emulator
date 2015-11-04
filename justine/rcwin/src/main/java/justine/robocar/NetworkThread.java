@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 
@@ -38,10 +39,11 @@ public class NetworkThread extends Thread implements PlayBack {
 	private volatile int speed = 200;
 	private volatile long neededPosition = -1;
 	private volatile boolean playing = true;
+	private ChaseTime ctime;
 
 	public static List caughtListForPolice = new ArrayList<Integer>();
 	public static List timeListForPolice = new ArrayList<ChaseTime>();
-
+	public static List rankingForPolice = new ArrayList<Long>();
 
 	public interface OnNewTrafficListener {
 		public void onNewTraffic(Traffic traffic);
@@ -276,10 +278,26 @@ public class NetworkThread extends Thread implements PlayBack {
 
 						if (policeID == timeListForPolice.size()) {
 							timeListForPolice.add(new ChaseTime());
-							caughtListForPolice.add(new Integer(0));	
+							caughtListForPolice.add(new Integer(0));
+							rankingForPolice.add(new Long(0));	
+						} else {
+							ctime = (ChaseTime)timeListForPolice.get(policeID);
+							rankingForPolice.set(policeID, ctime.getAllSeconds());
 						}
 
 						++policeID;
+					}
+
+
+
+					int index;
+					Collections.sort(rankingForPolice);
+					for (WaypointPolice way: cop_list) {
+						ctime = (ChaseTime)timeListForPolice.get(way.getPoliceID());
+						index = rankingForPolice.indexOf(ctime.getAllSeconds());
+						way.setRank(index);
+
+						rankingForPolice.set(index, -1);
 					}
 
 

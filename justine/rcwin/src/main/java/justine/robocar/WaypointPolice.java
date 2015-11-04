@@ -31,6 +31,7 @@ class WaypointPolice extends UpdateableWaypoint {
 	Color pathcolor = new Color(0, 66, 255, 170);
 	protected static boolean on = false;
 	private int policeID;
+	private int rank;
 
 
 	public WaypointPolice(GeoPosition from, GeoPosition to, String name,
@@ -150,7 +151,7 @@ class WaypointPolice extends UpdateableWaypoint {
 
 		g.setFont(serif);
 		font_metrics = g.getFontMetrics();
-		int nameWidth = font_metrics.stringWidth(getName() + ctime);
+		int nameWidth = font_metrics.stringWidth(getName() + ctime + " r(" + (rank) + ")");
 
 		g.setColor(borderbg);
 		g.drawImage(getSprite(),
@@ -165,15 +166,19 @@ class WaypointPolice extends UpdateableWaypoint {
 		g.setColor(Color.WHITE);
 		
 		
-		
-		
 
-		g.drawString(getName() + ctime, (int) point.getX() + 2,
+		g.drawString(getName() + ctime + " r(" + (rank) + ")", (int) point.getX() + 2,
 				(int) point.getY() + 20 - 5);
 
 	}
 
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
 
+	public int getRank() {
+		return rank;
+	}
 
 
 	public ChaseTime checkAndGetChaseTime() {
@@ -187,8 +192,8 @@ class WaypointPolice extends UpdateableWaypoint {
 		}
 
 		return ctime;
-
 	}
+	
 
 	public Image getSprite() {
 		if (sprite == null) {
@@ -201,6 +206,10 @@ class WaypointPolice extends UpdateableWaypoint {
 
 	public void setPoliceID(int policeID) {
 		this.policeID = policeID;
+	}
+
+	public int getPoliceID() {
+		return policeID;
 	}
 
 	String getName() {
